@@ -1,0 +1,25 @@
+<h1>{{title}}</h1>
+
+  <form class="pure-form" action="/download/request">
+    <fieldset>
+      <legend>Enter number of configurations:</legend>
+      <input id="host" type="number" name="host">
+      <button class="pure-button pure-button-primary" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+    </fieldset>
+  </form>
+
+  {{#if numberSelected}}
+    <h5>{{numberSelected}} Configurations:</h5>
+
+    <ol>
+    {{#each serverResponse}}
+      <li>
+        Name: {{this.name}}<br>
+        Hostname: {{this.hostname}}<br>
+        Port: {{this.port}}<br>
+        Username: {{this.username}}<br>
+      </li>
+      <br>
+    {{/each}}
+    </ol>
+  {{/if}}
