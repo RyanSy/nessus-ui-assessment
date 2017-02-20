@@ -1,25 +1,78 @@
-<h1>{{title}}</h1>
+<h1>Nessus UI Assessment</h1>
 
   <form class="pure-form" action="/download/request">
     <fieldset>
       <legend>Enter number of configurations:</legend>
-      <input id="host" type="number" name="host">
+      <div class="pure-u-1-6">
+        <input class="pure-input-1" id="host" type="number" name="host" min="0" />
+      </div>
       <button class="pure-button pure-button-primary" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
     </fieldset>
   </form>
 
   {{#if numberSelected}}
-    <h5>{{numberSelected}} Configurations:</h5>
-
-    <ol>
-    {{#each serverResponse}}
-      <li>
-        Name: {{this.name}}<br>
-        Hostname: {{this.hostname}}<br>
-        Port: {{this.port}}<br>
-        Username: {{this.username}}<br>
-      </li>
+    <div id="config-list">
+      <h5>{{numberOfResults}} configurations found.</h5>
+      <form class="pure-form" action="/download/request">
+        <fieldset>
+          <input class="fuzzy-search" id="searchField" placeholder="Search within results" />
+          <input id="host" type="hidden" name="host" value="{{numberSelected}}"/>
+          <label for="displayResults">Results per page: </label>
+          <select id="displayResults" name="displayResults"  onchange="this.form.submit()">
+            <option value='10'>10</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+          </select>
+        </fieldset>
+      </form>
       <br>
-    {{/each}}
-    </ol>
+      <table class="pure-table pure-table-horizontal pure-table-striped" id="configTable">
+        <thead>
+          <tr>
+            <th><span class="sort" data-sort="name">Name</span></th>
+            <th><span class="sort" data-sort="hostname">Hostname</span></th>
+            <th><span class="sort" data-sort="port">Port</span></th>
+            <th><span class="sort" data-sort="username">Username</span></th>
+          </tr>
+        </thead>
+        <tbody class="list">
+          {{#each resultsArray}}
+            <tr>
+              <td class="name">{{this.name}}</td>
+              <td class="hostname">{{this.hostname}}</td>
+              <td class="port">{{this.port}}</td>
+              <td class="username">{{this.username}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <ul class="pagination"></ul>
+    </div>
+    <br>
+    <a class="pure-button pure-button-primary" href="/">Clear</a>
   {{/if}}
+
+  <script>
+    var numberToDisplay = 10;
+    {{#if displayResults}}
+      var numberToDisplay = {{displayResults}};
+    {{/if}}
+
+    var options = {
+      valueNames: [ 'name', 'hostname', 'port', 'username' ],
+      pagination: true,
+      page: numberToDisplay,
+      innerWindow: 3,
+      left: 3,
+      outerWindow: 3,
+      right:3,
+      indexAsync: true
+    };
+
+    var configList = new List('config-list', options);
+
+    $('#searchField').on('keyup', function() {
+      var searchString = $(this).val();
+      configList.search(searchString);
+    });
+  </script>
